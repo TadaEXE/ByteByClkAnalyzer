@@ -4,82 +4,77 @@
 
 
 ByteByClkAnalyzerSettings::ByteByClkAnalyzerSettings()
-    : mInputChannel( UNDEFINED_CHANNEL ),
-      mClockChannel( UNDEFINED_CHANNEL ),
-      mStartOnRising( false ),
+    : mInputChannel(UNDEFINED_CHANNEL),
+      mClockChannel(UNDEFINED_CHANNEL),
+      mStartOnRising(false),
       mInputChannelInterface(),
       mClockChannelInterface(),
-      mStartOnRisingInterface()
-{
-    mInputChannelInterface.SetTitleAndTooltip( "Data", "Data channel" );
-    mInputChannelInterface.SetChannel( mInputChannel );
+      mStartOnRisingInterface() {
+  mInputChannelInterface.SetTitleAndTooltip("Data", "Data channel");
+  mInputChannelInterface.SetChannel(mInputChannel);
 
-    mClockChannelInterface.SetTitleAndTooltip( "Clock", "Clock channel" );
-    mClockChannelInterface.SetChannel( mClockChannel );
+  mClockChannelInterface.SetTitleAndTooltip("Clock", "Clock channel");
+  mClockChannelInterface.SetChannel(mClockChannel);
 
-    mStartOnRisingInterface.SetTitleAndTooltip( "Start on rising", "Start analyzing on rising edge of clock?" );
-    mStartOnRisingInterface.SetValue( mStartOnRising );
+  mStartOnRisingInterface.SetTitleAndTooltip("Start on rising",
+                                             "Start analyzing on rising edge of clock?");
+  mStartOnRisingInterface.SetValue(mStartOnRising);
 
-    AddInterface( &mInputChannelInterface );
-    AddInterface( &mClockChannelInterface );
-    AddInterface( &mStartOnRisingInterface );
+  AddInterface(&mInputChannelInterface);
+  AddInterface(&mClockChannelInterface);
+  AddInterface(&mStartOnRisingInterface);
 
-    AddExportOption( 0, "Export as text/csv file" );
-    AddExportExtension( 0, "text", "txt" );
-    AddExportExtension( 0, "csv", "csv" );
+  AddExportOption(0, "Export as text/csv file");
+  AddExportExtension(0, "text", "txt");
+  AddExportExtension(0, "csv", "csv");
 
-    ClearChannels();
-    AddChannel( mInputChannel, "Data", false );
-    AddChannel( mClockChannel, "Clock", false );
+  ClearChannels();
+  AddChannel(mInputChannel, "Data", false);
+  AddChannel(mClockChannel, "Clock", false);
 }
 
-ByteByClkAnalyzerSettings::~ByteByClkAnalyzerSettings()
-{
+ByteByClkAnalyzerSettings::~ByteByClkAnalyzerSettings() {
 }
 
-bool ByteByClkAnalyzerSettings::SetSettingsFromInterfaces()
-{
-    mInputChannel = mInputChannelInterface.GetChannel();
-    mClockChannel = mClockChannelInterface.GetChannel();
-    mStartOnRising = mStartOnRisingInterface.GetValue();
+bool ByteByClkAnalyzerSettings::SetSettingsFromInterfaces() {
+  mInputChannel = mInputChannelInterface.GetChannel();
+  mClockChannel = mClockChannelInterface.GetChannel();
+  mStartOnRising = mStartOnRisingInterface.GetValue();
 
-    ClearChannels();
-    AddChannel( mInputChannel, "Data", true );
-    AddChannel( mClockChannel, "Clock", true );
+  ClearChannels();
+  AddChannel(mInputChannel, "Data", true);
+  AddChannel(mClockChannel, "Clock", true);
 
-    return true;
+  return true;
 }
 
-void ByteByClkAnalyzerSettings::UpdateInterfacesFromSettings()
-{
-    mInputChannelInterface.SetChannel( mInputChannel );
-    mClockChannelInterface.SetChannel( mClockChannel );
-    mStartOnRisingInterface.SetValue( mStartOnRising );
+void ByteByClkAnalyzerSettings::UpdateInterfacesFromSettings() {
+  mInputChannelInterface.SetChannel(mInputChannel);
+  mClockChannelInterface.SetChannel(mClockChannel);
+  mStartOnRisingInterface.SetValue(mStartOnRising);
 }
 
-void ByteByClkAnalyzerSettings::LoadSettings( const char* settings )
-{
-    SimpleArchive text_archive;
-    text_archive.SetString( settings );
+void ByteByClkAnalyzerSettings::LoadSettings(const char* settings) {
+  SimpleArchive text_archive;
+  text_archive.SetString(settings);
 
-    text_archive >> mInputChannel;
-    text_archive >> mClockChannel;
-    text_archive >> mStartOnRising;
+  text_archive >> mInputChannel;
+  text_archive >> mClockChannel;
+  text_archive >> mStartOnRising;
 
-    ClearChannels();
-    AddChannel( mInputChannel, "Data", true );
-    AddChannel( mClockChannel, "Clock", true );
+  ClearChannels();
+  AddChannel(mInputChannel, "Data", true);
+  AddChannel(mClockChannel, "Clock", true);
 
-    UpdateInterfacesFromSettings();
+  UpdateInterfacesFromSettings();
 }
 
-const char* ByteByClkAnalyzerSettings::SaveSettings()
-{
-    SimpleArchive text_archive;
+const char* ByteByClkAnalyzerSettings::SaveSettings() {
+  SimpleArchive text_archive;
 
-    text_archive << mInputChannel;
-    text_archive << mClockChannel;
-    text_archive << mStartOnRising;
+  text_archive << mInputChannel;
+  text_archive << mClockChannel;
+  text_archive << mStartOnRising;
 
-    return SetReturnString( text_archive.GetString() );
+  return SetReturnString(text_archive.GetString());
 }

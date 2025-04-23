@@ -5,25 +5,24 @@
 #include <string>
 class ByteByClkAnalyzerSettings;
 
-class ByteByClkSimulationDataGenerator
-{
+class ByteByClkSimulationDataGenerator {
 public:
-	ByteByClkSimulationDataGenerator();
-	~ByteByClkSimulationDataGenerator();
+  ByteByClkSimulationDataGenerator();
+  ~ByteByClkSimulationDataGenerator();
 
-	void Initialize( U32 simulation_sample_rate, ByteByClkAnalyzerSettings* settings );
-	U32 GenerateSimulationData( U64 newest_sample_requested, U32 sample_rate, SimulationChannelDescriptor** simulation_channel );
-
-protected:
-	ByteByClkAnalyzerSettings* mSettings;
-	U32 mSimulationSampleRateHz;
+  void Initialize(U32 simulation_sample_rate, ByteByClkAnalyzerSettings* settings);
+  U32 GenerateSimulationData(U64 newest_sample_requested, U32 sample_rate,
+                             SimulationChannelDescriptor** simulation_channel);
 
 protected:
-	void CreateSerialByte();
-	std::string mSerialText;
-	U32 mStringIndex;
+  ByteByClkAnalyzerSettings* mSettings;
+  U32 mSimulationSampleRateHz;
 
-	SimulationChannelDescriptor mSerialSimulationData;
+protected:
+  void CreateSerialByte();
+  std::string mSerialText;
+  U32 mStringIndex;
 
+  SimulationChannelDescriptor mSerialSimulationData;
 };
-#endif //BYTEBYCLK_SIMULATION_DATA_GENERATOR
+#endif // BYTEBYCLK_SIMULATION_DATA_GENERATOR
