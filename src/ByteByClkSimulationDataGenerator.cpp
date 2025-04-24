@@ -15,7 +15,7 @@ void ByteByClkSimulationDataGenerator::Initialize(U32 simulation_sample_rate,
   mSimulationSampleRateHz = simulation_sample_rate;
   mSettings = settings;
 
-  mSerialSimulationData.SetChannel(mSettings->mInputChannel);
+  mSerialSimulationData.SetChannel(mSettings->data_channel);
   mSerialSimulationData.SetSampleRate(simulation_sample_rate);
   mSerialSimulationData.SetInitialBitState(BIT_HIGH);
 }

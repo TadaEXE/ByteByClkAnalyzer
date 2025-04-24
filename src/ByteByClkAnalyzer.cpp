@@ -1,10 +1,10 @@
 #include "ByteByClkAnalyzer.h"
 #include "ByteByClkAnalyzerSettings.h"
 #include <AnalyzerChannelData.h>
+#include <LogicPublicTypes.h>
 
-ByteByClkAnalyzer::ByteByClkAnalyzer()
-    : Analyzer2(), mSettings(), mSimulationInitilized(false) {
-  SetAnalyzerSettings(&mSettings);
+ByteByClkAnalyzer::ByteByClkAnalyzer() : Analyzer2(), settings(), sim_initilized(false) {
+  SetAnalyzerSettings(&settings);
 }
 
 ByteByClkAnalyzer::~ByteByClkAnalyzer() {
@@ -14,42 +14,46 @@ ByteByClkAnalyzer::~ByteByClkAnalyzer() {
 void ByteByClkAnalyzer::SetupResults() {
   // SetupResults is called each time the analyzer is run. Because the same instance can
   // be used for multiple runs, we need to clear the results each time.
-  mResults.reset(new ByteByClkAnalyzerResults(this, &mSettings));
-  SetAnalyzerResults(mResults.get());
-  mResults->AddChannelBubblesWillAppearOn(mSettings.mInputChannel);
+  results.reset(new ByteByClkAnalyzerResults(this, &settings));
+  SetAnalyzerResults(results.get());
+  results->AddChannelBubblesWillAppearOn(settings.data_channel);
 }
 
 void ByteByClkAnalyzer::WorkerThread() {
-  mSampleRateHz = GetSampleRate();
+  sample_rate = GetSampleRate();
 
-  mSerial = GetAnalyzerChannelData(mSettings.mInputChannel);
+  data_ch = GetAnalyzerChannelData(settings.data_channel);
+  clock_ch = GetAnalyzerChannelData(settings.clock_channel);
 
-  if(mSerial->GetBitState() == BIT_LOW)
-    mSerial->AdvanceToNextEdge();
+  if(!data_ch || !clock_ch)
+    return;
 
-  U32 samples_per_bit = mSampleRateHz; // / mSettings.mBitRate;
-  U32 samples_to_first_center_of_first_data_bit =
-      1; // U32( 1.5 * double( mSampleRateHz ) / double( mSettings.mBitRate ) );
+  if(clock_ch->GetBitState() == settings.start_on_rising)
+    clock_ch->AdvanceToNextEdge();
 
   for(;;) {
     U8 data = 0;
     U8 mask = 1 << 7;
 
-    mSerial->AdvanceToNextEdge(); // falling edge -- beginning of the start bit
-
-    U64 starting_sample = mSerial->GetSampleNumber();
-
-    mSerial->Advance(samples_to_first_center_of_first_data_bit);
+    clock_ch->AdvanceToNextEdge();
+    U64 starting_sample = clock_ch->GetSampleNumber();
+    data_ch->AdvanceToAbsPosition(starting_sample);
 
     for(U32 i = 0; i < 8; i++) {
-      // let's put a dot exactly where we sample this bit:
-      mResults->AddMarker(mSerial->GetSampleNumber(), AnalyzerResults::Dot,
-                          mSettings.mInputChannel);
+      clock_ch->AdvanceToNextEdge();
+      data_ch->AdvanceToAbsPosition(clock_ch->GetSampleNumber());
 
-      if(mSerial->GetBitState() == BIT_HIGH)
+      if(data_ch->GetBitState() == BIT_LOW) {
+        results->AddMarker(data_ch->GetSampleNumber(), AnalyzerResults::Zero,
+                           settings.data_channel);
+      } else {
+        results->AddMarker(data_ch->GetSampleNumber(), AnalyzerResults::One,
+                           settings.data_channel);
+      }
+      if(data_ch->GetBitState() == BIT_HIGH)
         data |= mask;
 
-      mSerial->Advance(samples_per_bit);
+      clock_ch->AdvanceToNextEdge();
 
       mask = mask >> 1;
     }
@@ -60,10 +64,10 @@ void ByteByClkAnalyzer::WorkerThread() {
     frame.mData1 = data;
     frame.mFlags = 0;
     frame.mStartingSampleInclusive = starting_sample;
-    frame.mEndingSampleInclusive = mSerial->GetSampleNumber();
+    frame.mEndingSampleInclusive = data_ch->GetSampleNumber();
 
-    mResults->AddFrame(frame);
-    mResults->CommitResults();
+    results->AddFrame(frame);
+    results->CommitResults();
     ReportProgress(frame.mEndingSampleInclusive);
   }
 }
@@ -75,17 +79,17 @@ bool ByteByClkAnalyzer::NeedsRerun() {
 U32 ByteByClkAnalyzer::GenerateSimulationData(
     U64 minimum_sample_index, U32 device_sample_rate,
     SimulationChannelDescriptor** simulation_channels) {
-  if(mSimulationInitilized == false) {
-    mSimulationDataGenerator.Initialize(GetSimulationSampleRate(), &mSettings);
-    mSimulationInitilized = true;
+  if(sim_initilized == false) {
+    sim_data_gen.Initialize(GetSimulationSampleRate(), &settings);
+    sim_initilized = true;
   }
 
-  return mSimulationDataGenerator.GenerateSimulationData(
-      minimum_sample_index, device_sample_rate, simulation_channels);
+  return sim_data_gen.GenerateSimulationData(minimum_sample_index, device_sample_rate,
+                                             simulation_channels);
 }
 
 U32 ByteByClkAnalyzer::GetMinimumSampleRateHz() {
-  return 1; // mSettings.mBitRate * 4;
+  return 1; // settings.mBitRate * 4;
 }
 
 const char* ByteByClkAnalyzer::GetAnalyzerName() const {

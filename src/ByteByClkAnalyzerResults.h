@@ -24,8 +24,8 @@ public:
 
 protected: // functions
 protected: // vars
-  ByteByClkAnalyzerSettings* mSettings;
-  ByteByClkAnalyzer* mAnalyzer;
+  ByteByClkAnalyzerSettings* settings;
+  ByteByClkAnalyzer* analyzer;
 };
 
 #endif // BYTEBYCLK_ANALYZER_RESULTS

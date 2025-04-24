@@ -16,14 +16,14 @@ public:
   virtual const char* SaveSettings();
 
 
-  Channel mInputChannel;
-  Channel mClockChannel;
-  bool mStartOnRising;
+  Channel data_channel;
+  Channel clock_channel;
+  bool start_on_rising;
 
 protected:
-  AnalyzerSettingInterfaceChannel mInputChannelInterface;
-  AnalyzerSettingInterfaceChannel mClockChannelInterface;
-  AnalyzerSettingInterfaceBool mStartOnRisingInterface;
+  AnalyzerSettingInterfaceChannel data_interface;
+  AnalyzerSettingInterfaceChannel clock_interface;
+  AnalyzerSettingInterfaceBool sor_interface;
 };
 
 #endif // BYTEBYCLK_ANALYZER_SETTINGS

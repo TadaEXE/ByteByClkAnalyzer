@@ -22,18 +22,21 @@ public:
   virtual const char* GetAnalyzerName() const;
   virtual bool NeedsRerun();
 
-protected: // vars
-  ByteByClkAnalyzerSettings mSettings;
-  std::unique_ptr<ByteByClkAnalyzerResults> mResults;
-  AnalyzerChannelData* mSerial;
+protected:
+  U32 get_samples_per_clock();
+  ByteByClkAnalyzerSettings settings;
+  std::unique_ptr<ByteByClkAnalyzerResults> results;
+  AnalyzerChannelData* data_ch;
+  AnalyzerChannelData* clock_ch;
 
-  ByteByClkSimulationDataGenerator mSimulationDataGenerator;
-  bool mSimulationInitilized;
+  ByteByClkSimulationDataGenerator sim_data_gen;
+  bool sim_initilized;
 
+  U32 sample_rate;
   // Serial analysis vars:
-  U32 mSampleRateHz;
-  U32 mStartOfStopBitOffset;
-  U32 mEndOfStopBitOffset;
+  // U32 mSampleRateHz;
+  // U32 mStartOfStopBitOffset;
+  // U32 mEndOfStopBitOffset;
 };
 
 extern "C" ANALYZER_EXPORT const char* __cdecl GetAnalyzerName();

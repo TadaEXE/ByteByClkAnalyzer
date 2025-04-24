@@ -7,7 +7,7 @@
 
 ByteByClkAnalyzerResults::ByteByClkAnalyzerResults(ByteByClkAnalyzer* analyzer,
                                                    ByteByClkAnalyzerSettings* settings)
-    : AnalyzerResults(), mSettings(settings), mAnalyzer(analyzer) {
+    : AnalyzerResults(), settings(settings), analyzer(analyzer) {
 }
 
 ByteByClkAnalyzerResults::~ByteByClkAnalyzerResults() {
@@ -28,8 +28,8 @@ void ByteByClkAnalyzerResults::GenerateExportFile(const char* file,
                                                   U32 export_type_user_id) {
   std::ofstream file_stream(file, std::ios::out);
 
-  U64 trigger_sample = mAnalyzer->GetTriggerSample();
-  U32 sample_rate = mAnalyzer->GetSampleRate();
+  U64 trigger_sample = analyzer->GetTriggerSample();
+  U32 sample_rate = analyzer->GetSampleRate();
 
   file_stream << "Time [s],Value" << std::endl;
 
