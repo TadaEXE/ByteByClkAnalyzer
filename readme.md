@@ -1,7 +1,6 @@
-# Tadas BBC-Analyzer (Byte By Clock)
+# Byte By Clock Analyzer (aka. BBC-Anal)
 
-This is a simple low level analyzer for Saleae Logic 2.
-It can take any clock signal (even maleformed or modulated ones) and map your corresponding data signal bytewise (it's actually bitwise but I already chose the name).
+Byte by Clock is a low-level protocol analyzer for Saleae Logic 2 that evaluates a data channel bytewise based on a dedicated clock channel. Each bit is sampled precisely on the rising or falling edge of the clock, ensuring correct alignment even with irregular or non-uniform clock pulse widths. Designed for analyzing synchronous digital signals where data is defined relative to clock edges.
 
 ## Building
 
