@@ -28,16 +28,14 @@ void ByteByClkAnalyzer::WorkerThread() {
   if(!data_ch || !clock_ch)
     return;
 
-  if(clock_ch->GetBitState() == settings.start_on_rising)
+  if(clock_ch->GetBitState() != settings.valid_on_falling)
     clock_ch->AdvanceToNextEdge();
 
   for(;;) {
     U8 data = 0;
     U8 mask = 1 << 7;
 
-    clock_ch->AdvanceToNextEdge();
     U64 starting_sample = clock_ch->GetSampleNumber();
-    data_ch->AdvanceToAbsPosition(starting_sample);
 
     for(U32 i = 0; i < 8; i++) {
       clock_ch->AdvanceToNextEdge();

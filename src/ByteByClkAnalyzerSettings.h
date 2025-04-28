@@ -18,12 +18,12 @@ public:
 
   Channel data_channel;
   Channel clock_channel;
-  bool start_on_rising;
+  bool valid_on_falling;
 
 protected:
   AnalyzerSettingInterfaceChannel data_interface;
   AnalyzerSettingInterfaceChannel clock_interface;
-  AnalyzerSettingInterfaceBool sor_interface;
+  AnalyzerSettingInterfaceBool vof_interface;
 };
 
 #endif // BYTEBYCLK_ANALYZER_SETTINGS

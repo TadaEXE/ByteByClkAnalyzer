@@ -6,23 +6,23 @@
 ByteByClkAnalyzerSettings::ByteByClkAnalyzerSettings()
     : data_channel(UNDEFINED_CHANNEL),
       clock_channel(UNDEFINED_CHANNEL),
-      start_on_rising(false),
+      valid_on_falling(false),
       data_interface(),
       clock_interface(),
-      sor_interface() {
+      vof_interface() {
   data_interface.SetTitleAndTooltip("Data", "Data channel");
   data_interface.SetChannel(data_channel);
 
   clock_interface.SetTitleAndTooltip("Clock", "Clock channel");
   clock_interface.SetChannel(clock_channel);
 
-  sor_interface.SetTitleAndTooltip("Start on rising",
-                                             "Start analyzing on rising edge of clock?");
-  sor_interface.SetValue(start_on_rising);
+  vof_interface.SetTitleAndTooltip("Bits are valid on falling edge",
+                                             "Bits are valid on falling edge -> Analyzer starts with rising edge");
+  vof_interface.SetValue(valid_on_falling);
 
   AddInterface(&data_interface);
   AddInterface(&clock_interface);
-  AddInterface(&sor_interface);
+  AddInterface(&vof_interface);
 
   AddExportOption(0, "Export as text/csv file");
   AddExportExtension(0, "text", "txt");
@@ -39,7 +39,7 @@ ByteByClkAnalyzerSettings::~ByteByClkAnalyzerSettings() {
 bool ByteByClkAnalyzerSettings::SetSettingsFromInterfaces() {
   data_channel = data_interface.GetChannel();
   clock_channel = clock_interface.GetChannel();
-  start_on_rising = sor_interface.GetValue();
+  valid_on_falling = vof_interface.GetValue();
 
   ClearChannels();
   AddChannel(data_channel, "Data", true);
@@ -51,7 +51,7 @@ bool ByteByClkAnalyzerSettings::SetSettingsFromInterfaces() {
 void ByteByClkAnalyzerSettings::UpdateInterfacesFromSettings() {
   data_interface.SetChannel(data_channel);
   clock_interface.SetChannel(clock_channel);
-  sor_interface.SetValue(start_on_rising);
+  vof_interface.SetValue(valid_on_falling);
 }
 
 void ByteByClkAnalyzerSettings::LoadSettings(const char* settings) {
@@ -60,7 +60,7 @@ void ByteByClkAnalyzerSettings::LoadSettings(const char* settings) {
 
   text_archive >> data_channel;
   text_archive >> clock_channel;
-  text_archive >> start_on_rising;
+  text_archive >> valid_on_falling;
 
   ClearChannels();
   AddChannel(data_channel, "Data", true);
@@ -74,7 +74,7 @@ const char* ByteByClkAnalyzerSettings::SaveSettings() {
 
   text_archive << data_channel;
   text_archive << clock_channel;
-  text_archive << start_on_rising;
+  text_archive << valid_on_falling;
 
   return SetReturnString(text_archive.GetString());
 }
